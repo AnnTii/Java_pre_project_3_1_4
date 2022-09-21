@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" class="h-100"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <title>User Page</title>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <p class="navbar-brand text-white">
+        <b>&nbsp;&nbsp;&nbsp;<span class="align-middle" th:text="${user.email}"></span></b>
+        <span class="align-middle">with roles:</span>
+        <span class="align-middle" th:each="role : ${user.getRoles()}"
+              th:text="${role.getRoleName().replace('ROLE_', '')}"></span>
+    </p>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-dark text-secondary">Logout</button>
+    </form>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-white text-dark">
+            <br/>
+            <nav>
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link active show  text-left mx-lg-n3" style="width: 321px; height: 43px;"
+                           href="#" data-toggle="tab">User</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-10 bg-light text-dark" style="padding-bottom: 750px;">
+            <div class="container col-md-10">
+                <br><br>
+                <h1>User information-page</h1>
+                <div class="tab-content ">
+                    <div id="tableUsers"
+                         class="container tab-pane active col-12 py-0 px-lg-4 border bg-white text-dark">
+                        <div class="font-weight-bold py-2 px-lg-4 mx-lg-n4 pt-0 border bg-light text-dark">About
+                            user
+                        </div>
+                        <p>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Created At</th>
+                                <th>Created By</th>
+                                <th>Role</th>
+                            </tr>
+                            </thead>
+                            <tbody id="singleUserTable">
+                            </tbody>
+                        </table>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+        integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+        crossorigin="anonymous"></script>
+<script src="/controlApp.js"></script>
+</body>
+</html>
+
