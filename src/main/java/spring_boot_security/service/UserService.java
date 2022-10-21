@@ -5,6 +5,7 @@ import spring_boot_security.dto.UserDTO;
 import spring_boot_security.model.Role;
 import spring_boot_security.model.User;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
 
@@ -15,4 +16,11 @@ public interface UserService extends UserDetailsService {
     User findUserById(int id);
     User convertToUser(UserDTO userDTO);
     UserDTO convertToUserDTO(User user);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void saveUserForTest(User user);
+    void deleteUserByNameForTest(String username);
+    Optional<User> loginTest(String email, String password);
+    Optional<User> findUserByIdTest(int id);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 }

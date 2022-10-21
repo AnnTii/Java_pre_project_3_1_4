@@ -1,6 +1,10 @@
 package spring_boot_security.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,13 +14,18 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Set;
+import java.util.TimeZone;
 
 @Entity
 @Table(name = "users")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -52,7 +61,18 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+//    @Column(name = "created_at")
+//    private LocalDateTime createdAt = LocalDateTime.of(
+//            LocalDate.now().getYear(),
+//            LocalDate.now().getMonth(),
+//            LocalDate.now().getDayOfMonth(),
+//            LocalTime.now().getHour(),
+//            LocalTime.now().getMinute()
+//    );
+
     @Column(name = "created_at")
+    @Type(type = "org.hibernate.type.LocalDateTimeType")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "created_by")

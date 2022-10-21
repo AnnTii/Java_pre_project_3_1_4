@@ -1,15 +1,19 @@
 package spring_boot_security.exceptionHandler;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 
-@Data
+import java.time.LocalDateTime;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserErrorResponse {
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    private LocalDateTime timestamp;
+    private int status;
     private String message;
-    private long timeStamp;
 
-    public UserErrorResponse(String message, long timeStamp) {
-        this.message = message;
-        this.timeStamp = timeStamp;
-    }
 }

@@ -9,4 +9,6 @@ import spring_boot_security.model.User;
 public interface UserDao extends JpaRepository<User, Integer> {
     @EntityGraph(attributePaths = {"roles"})
     User getUserByEmail(String email);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void deleteUserByName(String name);
 }

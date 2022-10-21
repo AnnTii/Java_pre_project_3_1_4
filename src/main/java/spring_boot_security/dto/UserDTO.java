@@ -1,6 +1,8 @@
 package spring_boot_security.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import spring_boot_security.model.Role;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
@@ -9,6 +11,8 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
 
     private Integer id;
