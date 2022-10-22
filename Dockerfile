@@ -1,6 +1,9 @@
 # Oбраз создаётся на основе alpine linux с установленной openjdk11
 FROM adoptopenjdk/openjdk11:alpine-jre
 
+# Развернуть приложение на порту 8080
+#EXPOSE 8080
+
 # Переменной JAR_FILE присваивается путь к jar- архиву
 ARG JAR_FILE=target/anti-1.0.jar
 
@@ -102,6 +105,14 @@ ENTRYPOINT ["java","-jar","myapp.jar"]
 # java -jar AnTi-1.0.jar - запустить собраный jar (вне Docker)
 # Найти идентификатор процесса командой jps и убить их командой taskkill -f /PID ....
 
-# docker-compose down --volumes
+# docker stop $(docker ps -a -q)
+# docker rm $(docker ps -a -q)
 # docker rmi $(docker images -a -q)
+# docker volume rm $(docker volume ls -a -q)
+# docker network rm $(docker network ls -a -q)
+
+# docker-compose down --volumes
+# docker system prune
 # docker-compose up --build
+
+# docker-compose config

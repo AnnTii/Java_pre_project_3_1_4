@@ -1,1 +1,1 @@
-CREATE SCHEMA docker_schema;
+CREATE SCHEMA IF NOT EXISTS docker_schema;

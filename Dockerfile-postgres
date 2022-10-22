@@ -1,3 +1,0 @@
-FROM postgres:15-alpine
-
-ADD ./sql /docker-entrypoint-initdb.d/
