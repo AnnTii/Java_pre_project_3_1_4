@@ -1,2 +1,1 @@
--- CREATE DATABASE postgres_docker;
-CREATE SCHEMA docker_schema;
+CREATE DATABASE docker_database;

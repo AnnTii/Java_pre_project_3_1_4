@@ -1,27 +1,21 @@
-# Версия Docker API
 version: '3.9'
-# Сервисы которые мы будем запускать
+
 services:
 
-  # Первый сервис - db
 #  postgres:
 #    container_name: postgres
-#    # Образ на основе которого он будет запускаться
 #    image: postgres:15-alpine
-##    restart: always
-#    # volumes - магическая вещь, которая создает некоторое устройство в
-#    # рамках Docker и монтирует его в директорию /var/lib/postgresql/data
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data/
-#      - ./db/changelog/create_database.sql:/docker-entrypoint-initdb.d/create_tables.sql
-#    # Переменные окружения
 #    environment:
-#      POSTGRES_DB: postgres_docker
+##      POSTGRES_HOST: localhost
+#      POSTGRES_DB: docker_database
 #      POSTGRES_USER: postgres
 #      POSTGRES_PASSWORD: root
-#      PGDATA: /var/lib/postgresql/data/pgdata # При запуске этого скрипта рядом с ним создастся директория pgdata, где будут располагаться файлы БД
+#      POSTGRES_DATA: /var/lib/postgresql/data/pgdata
+#    volumes:
+#      - ./sql:/docker-entrypoint-initdb.d/
+#      - postgres_data:/var/lib/postgresql/data/
 #    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres_docker" ]
+#      test: [ "CMD-SHELL", "pg_isready -U postgres -d docker_database" ]
 #      interval: 10s
 #      timeout: 5s
 #      retries: 5
@@ -34,56 +28,64 @@ services:
 #          memory: 4G
 #    networks:
 #      - postgres
-#    # Говорим открыть снаружи порт 5432
 #    expose:
-#      - "5432"
+#      - 5432
 
   postgres:
-    image: postgres:latest
-    restart: always
-    ports:
-      - "5432:5432"
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: Dockerfile-postgres
     environment:
-#      - DATABASE_HOST=192.168.0.115
-      - DATABASE_HOST=127.0.0.1
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=postgres_docker
+      #      POSTGRES_HOST: localhost
+      POSTGRES_DB: docker_database
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
-#      - ./postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d docker_database" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+    networks:
+      - postgres
+    expose:
+      - 5432
 
-  # Второй сервис - app
   app:
-    # Говорим что его надо будет собрать - в качестве контекста
-    # передаем текущую директорию - в ней лежит Dockerfile
-    build: ./
-    # Монтируем локальную директорию ./src в директорию
-    # внутри контейнера /opt/app
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - ./src:/opt/app
-    # Говорим пробросить порт 8080 хоста в порт 8080 контейнера
     ports:
-      - "8080:8080"
+      - 8080:8080
     environment:
-      - PORT=8080
-      - HOST=http://localhost:8080/
-    # Зависит от сервиса db - запускать после него
+      PORT: 8080
+      HOST: http://localhost:8080/
     depends_on:
       - postgres
 
-  # Третий сервис - pgadmin
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4:5.7
     environment:
-      PGADMIN_DEFAULT_EMAIL: "test@gmail.com"
-      PGADMIN_DEFAULT_PASSWORD: "pgadmin"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_DEFAULT_EMAIL: test@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+      PGADMIN_CONFIG_SERVER_MODE: False
     volumes:
       - ./pgadmin:/var/lib/pgadmin
     ports:
-      - "16543:80"
+      - 16543:80
     restart: unless-stopped
     deploy:
       resources:
@@ -99,14 +101,14 @@ services:
     container_name: exporter_container
     image: prometheuscommunity/postgres-exporter:v0.10.0
     environment:
-      DATA_SOURCE_URI: "postgres:5432/postgres_docker?sslmode=disable"
-      DATA_SOURCE_USER: "postgres"
-      DATA_SOURCE_PASS: "root"
-      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
+      DATA_SOURCE_URI: postgres:5432/docker_database?sslmode=disable
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: root
+      PG_EXPORTER_EXTEND_QUERY_PATH: /etc/postgres_exporter/queries.yaml
     volumes:
       - ./queries.yaml:/etc/postgres_exporter/queries.yaml:ro
     ports:
-      - "9187:9187"
+      - 9187:9187
     restart: unless-stopped
     deploy:
       resources:
@@ -118,25 +120,12 @@ services:
     depends_on:
       - postgres
 
-
-# Просто говорим создать volume с именем postgres_data
 volumes:
   postgres_data:
 
 networks:
   postgres:
     driver: bridge
-
-#  adminer:
-#    container_name: adminer
-#    image: adminer
-#    restart: always
-#    ports:
-#      - "1010:8080"
-#    environment:
-#      - POSTGRES_DB= "localhost:5555/docker_test_app"
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_PASSWORD=root
 
 #################################################INFO###################################################################
 
