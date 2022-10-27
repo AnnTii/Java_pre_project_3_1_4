@@ -197,3 +197,48 @@ docker-compose -f docker-compose.yml -f docker-compose.admin.yml run -it backup_
 # 3 docker run -d -p 8080:8080 -t spring-docker:0.0.1 // java -jar spring-docker-1.0.jar - запустить собраный jar (вне Docker)
 # 4 curl http://localhost:8080
 ```
+### EUREKA
+```
+spring.application.name=Ia sam give name client
+#server.port=${PORT:8762}
+
+###################################                  INSTANCE                  #########################################
+Свойство особенно важно, поскольку мы запускаем его на локальном компьютере
+eureka.instance.hostname=my-eureka-server.com
+указываем url по которому клиент будет искать свой сервер, обязательно указываем свойство
+eureka.instance.prefer-ip-address=true
+свойство, указывает интервал эхо запроса, который клиент отправляет на сервер (значение по умолчанию - 30 секунд)
+eureka.instance.lease-renewal-interval-in-seconds=30
+Если Eureka Server не видел обновления в течение 90 секунд, он удаляет экземпляр из своего реестра
+eureka.instance.lease-expiration-duration-in-seconds=100
+
+###################################                  CLIENT                  ###########################################
+если параметр shouldUseDns имеет значение false, мы будем использовать следующие свойства для явного указания маршрута к серверам eureka
+eureka.client.service-url.defaultZone=http://${eureka.instance.hostname}:${server.port}/eureka/
+мы не хотим чтобы клиент получал информацию реестра от Eureka Server
+eureka.client.fetch-registry=false
+можем запретить Eureka Client регистрироваться в качестве экземпляра
+eureka.client.register-with-eureka=false
+указать время ожидания (в секундах) до истечения тайм-аута соединения с Eureka Server
+eureka.client.eureka-server-connect-timeout-seconds=5
+указать время ожидания (в секундах) до истечения тайм-аута чтения с Eureka Server
+eureka.client.eureka-server-read-timeout-seconds=5
+указать общее количество подключений, разрешенных от клиента ко всем серверам
+eureka.client.eureka-server-total-connections=200
+указать общее количество подключений, разрешенных от клиента к определенному серверу
+eureka.client.eureka-server-total-connections-per-host=50
+как часто (в секундах) необходимо запрашивать изменения об информации с сервера
+eureka.client.eureka-service-url-poll-interval-seconds=1
+
+###################################                  SERVER                  ###########################################
+По умолчанию Eureka Client используют Jersey и Jackson вместе с JSON для связи с Eureka Server
+указать свое время, по которому сервер будет ожидать эхо запрос от клиента о том что он жив (по умолчанию 30 секунд)
+eureka.server.expected-client-Renewal-interval-seconds=100
+Если вы хотите использовать поиск на основе DNS для определения других серверов eureka
+eureka.shouldUseDns= true
+Если у вас на клиенте есть собственная клиентская конфигурация, то на стороне сервера eureka установите для обновления по требованию значение в false
+eureka.shouldOnDemandUpdateStatusChange= false
+
+Eureka Server использует протокол, который требует, чтобы клиенты выполняли явное действие отмены регистрации
+DiscoveryManager.getInstance().shutdownComponent()
+```
